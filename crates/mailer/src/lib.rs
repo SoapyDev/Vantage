@@ -205,7 +205,7 @@ mod send_impl {
     }
 
     /// Sends the report over the configured transport. The SMTP connection is
-    /// built once and reused (see [`smtp_transport`]).
+    /// built once and reused (see `smtp_transport`).
     ///
     /// # Errors
     /// Returns an error if the message cannot be built or the transport fails.

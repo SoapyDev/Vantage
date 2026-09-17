@@ -26,7 +26,11 @@ fn main() {
 
     // `environments.yaml` is gitignored (it holds real hosts/secret names), so
     // a fresh checkout — including CI — falls back to the committed example.
-    let path = if yaml_path.exists() { &yaml_path } else { &example_path };
+    let path = if yaml_path.exists() {
+        &yaml_path
+    } else {
+        &example_path
+    };
 
     let text = fs::read_to_string(path)
         .unwrap_or_else(|e| panic!("failed to read {}: {e}", path.display()));

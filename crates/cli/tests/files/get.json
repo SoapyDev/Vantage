@@ -1,0 +1,23 @@
+{
+  "url": "/get",
+  "method": "GET",
+  "ignored_fields": ["url", "origin"],
+
+  "steps": [
+    {
+      "name": "Call httpbin.org",
+      "url": "https://httpbin.org/get",
+      "method": "GET"
+    }
+  ],
+
+  "tests": [
+    {
+      "name": "JSON Simple GET",
+      "expected_status": 200,
+      "expected_response": {
+        "args": {}
+      }
+    }
+  ]
+}

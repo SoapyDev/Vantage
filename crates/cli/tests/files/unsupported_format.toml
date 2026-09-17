@@ -1,0 +1,12 @@
+url = "/unsupported_format"
+method = "GET"
+ignored_fields = ["url", "origin"]
+tests = [
+    {
+        "name": "Unsupported Format",
+        "expected_status": 400,
+        "expected_response": {
+            "error": "Unsupported file format: unsupported_format.toml"
+        }
+    }
+]

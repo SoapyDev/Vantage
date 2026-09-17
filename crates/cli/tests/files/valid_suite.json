@@ -1,0 +1,14 @@
+{
+  "url": "{{BASE_URL}}/api/x",
+  "method": "POST",
+  "steps": [],
+  "tests": [
+    {
+      "name": "t",
+      "payload": {},
+      "expected_response": {
+        "ok": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+url: "/get"
+method: "GET"
+
+ignored_fields:
+  - "url"
+  - "origin"
+
+tests:
+  - name: "Simple GET Check"
+    expected_status: 200
+    expected_response:
+      args: {}

@@ -1,0 +1,7 @@
+url: "https://httpbin.org/get"
+method: "GET"
+test:
+  - name: "Broken YAML"
+    expected_status: 200
+    expected_response
+      foo: bar

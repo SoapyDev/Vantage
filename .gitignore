@@ -1,0 +1,21 @@
+target/
+.env
+/.idea
+/.zed
+
+# Local environment config (contains real hosts/secrets); a domain-agnostic
+# template is committed as environments.example.yaml.
+/environments.yaml
+
+/sandbox/*
+/reports/*
+/benchmarks/*
+/test-suite/*
+/mail-outbox/*
+/groups/*
+
+!/sandbox/README.md
+!/reports/README.md
+!/benchmarks/README.md
+!/test-suite/README.md
+!/groups/README.md

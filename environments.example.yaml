@@ -1,0 +1,36 @@
+# Example environment definitions for the vantage CLI.
+#
+# Copy this file to `environments.yaml` (gitignored) and adjust the hosts and
+# secret names for your own services.
+#
+# Each environment is a flat map of template variables made available to test
+# suites (referenced as `{{VARIABLE}}`). Values may embed `${ENV_KEY}`
+# placeholders, which are resolved at startup from the process environment
+# (typically loaded from the local `.env` file). Secrets therefore stay in
+# `.env`; this file only describes structure and which secret each env uses.
+#
+# This file is parsed and validated at build time and embedded into the binary,
+# so adding or changing an environment requires a rebuild. The set of valid
+# `--environment` / `--compare-with` names is derived from the keys below.
+
+environments:
+  sandbox:
+    BASE_URL: https://sandbox.example.com
+    IDENTITY_SERVER_BASE_URL: https://login.example.com
+    CLIENT_ID: ${AUTH_CLIENT_ID}
+    CLIENT_SECRET: ${AUTH_CLIENT_SECRET}
+    TENANT_ID: ${AUTH_TENANT_ID}
+
+  staging:
+    BASE_URL: https://staging.example.com
+    IDENTITY_SERVER_BASE_URL: https://login.example.com
+    CLIENT_ID: ${AUTH_CLIENT_ID}
+    CLIENT_SECRET: ${AUTH_CLIENT_SECRET}
+    TENANT_ID: ${AUTH_TENANT_ID}
+
+  prod:
+    BASE_URL: https://api.example.com
+    IDENTITY_SERVER_BASE_URL: https://login.example.com
+    CLIENT_ID: ${AUTH_CLIENT_ID}
+    CLIENT_SECRET: ${AUTH_CLIENT_SECRET}
+    TENANT_ID: ${AUTH_TENANT_ID}

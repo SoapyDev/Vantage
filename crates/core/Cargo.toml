@@ -1,0 +1,18 @@
+[package]
+name = "vantage-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde = {workspace = true, features = ["derive"]}
+serde_json = {workspace = true}
+
+serde-aux = "4.7.0"
+regex = "1.12"
+
+[dev-dependencies]
+criterion = { workspace = true }
+
+[[bench]]
+name = "template_engine"
+harness = false

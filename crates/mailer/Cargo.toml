@@ -1,0 +1,22 @@
+[package]
+name = "mailer"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow = { workspace = true }
+lettre = { workspace = true, optional = true }
+
+[features]
+# The generic SMTP transport (workhorse). Providers below are presets on top.
+default = ["smtp"]
+smtp = ["dep:lettre"]
+# Provider presets. Today these only select host/port/security, so they are
+# cheap; the seams are where a future OAuth/API integration would add deps.
+o365 = ["smtp"]
+gmail = ["smtp"]
+protonmail = ["smtp"]
+all-providers = ["o365", "gmail", "protonmail"]
+
+[dev-dependencies]
+tokio = { workspace = true }

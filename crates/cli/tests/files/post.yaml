@@ -1,0 +1,32 @@
+url: "/post"
+method: "POST"
+
+ignored_fields:
+  - "origin"
+  - "url"
+  - "data"
+  - "files"
+  - "form"
+  - "args"
+
+tests:
+  - name: "Create User Alice"
+    payload:
+      username: "alice"
+      role: "admin"
+    expected_status: 200
+    expected_response:
+      json:
+        username: "alice"
+        role: "admin"
+
+  - name: "Create User Bob"
+    payload:
+      username: "bob"
+      role: "user"
+    expected_status: 200
+    ignored_fields:
+      - "json.role"
+    expected_response:
+      json:
+        username: "bob"

@@ -1,0 +1,36 @@
+[package]
+name = "cli"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+vantage-core = {path = "../core"}
+runner = {path = "../runner"}
+reporter = {path = "../reporter"}
+mailer = {path = "../mailer", optional = true, default-features = false}
+
+anyhow = {workspace = true }
+clap = { workspace = true }
+reqwest = {workspace = true}
+serde = {workspace = true}
+serde_json = {workspace = true}
+tokio = {workspace = true, features = ["full"]}
+
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+dotenvy = "0.15.7"
+serde_yaml_ng = "0.10"
+
+[features]
+# Email reports after a run. Off by default: without it, no mail code or
+# dependency is compiled in. Provider features add SMTP presets.
+email = ["dep:mailer", "mailer/smtp"]
+email-o365 = ["email", "mailer/o365"]
+email-gmail = ["email", "mailer/gmail"]
+email-protonmail = ["email", "mailer/protonmail"]
+email-all = ["email", "mailer/all-providers"]
+
+[build-dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml_ng = "0.10"

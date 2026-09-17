@@ -1,0 +1,184 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/vantage/suite.schema.json",
+  "title": "vantage test suite",
+  "description": "A vantage endpoint-test suite: suite-level defaults plus the steps (setup) and tests (asserted) to run. Keys beginning with an underscore (e.g. _note) are treated as free-form annotations and ignored.",
+  "type": "object",
+  "required": ["url", "tests"],
+  "additionalProperties": false,
+  "patternProperties": { "^_": {} },
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional pointer to this schema, so editors validate the file inline."
+    },
+    "url": {
+      "type": "string",
+      "description": "Base URL applied to requests that do not set their own. Supports {{variable}} templates."
+    },
+    "method": { "$ref": "#/definitions/method" },
+    "headers": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Headers merged into every request; request-level entries win on conflict."
+    },
+    "sorts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "JSON pointers to array fields sorted before comparison."
+    },
+    "ignored_fields": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Field paths stripped from responses before comparison."
+    },
+    "steps": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/request" },
+      "description": "Setup requests run before the tests; not asserted, but their captures feed the dictionary."
+    },
+    "tests": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/request" },
+      "description": "The asserted requests that make up the suite."
+    },
+    "before_all": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/action" },
+      "description": "CLI actions run once before the steps."
+    },
+    "after_all": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/action" },
+      "description": "CLI actions run once after the tests."
+    }
+  },
+  "definitions": {
+    "method": {
+      "type": "string",
+      "enum": ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "TRACE"]
+    },
+    "contentType": {
+      "type": "string",
+      "enum": [
+        "application/json",
+        "application/x-www-form-urlencoded",
+        "multipart/form-data"
+      ]
+    },
+    "onFailure": {
+      "type": "string",
+      "enum": ["continue", "fail", "abort"],
+      "description": "continue: log a WARN and keep going. fail: fail the owning step/test. abort: stop the whole suite."
+    },
+    "stringMap": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "request": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "patternProperties": { "^_": {} },
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string" },
+        "method": { "$ref": "#/definitions/method" },
+        "content_type": { "$ref": "#/definitions/contentType" },
+        "headers": { "$ref": "#/definitions/stringMap" },
+        "payload": {
+          "description": "Request body (any JSON). {{variable}} templates are resolved before sending."
+        },
+        "sorts": { "type": "array", "items": { "type": "string" } },
+        "ignored_fields": { "type": "array", "items": { "type": "string" } },
+        "capture": {
+          "$ref": "#/definitions/stringMap",
+          "description": "name -> JSON pointer into the response body (empty string = the whole body). The name may itself be a template."
+        },
+        "expected_status": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 599,
+          "description": "Expected HTTP status (default 200). A status >= 400 marks the request as a warm-up in benchmark mode."
+        },
+        "expected_response": {
+          "description": "Expected body (any JSON), compared after ignored_fields/sorts. Supports {{variable}} templates."
+        },
+        "for_each": { "$ref": "#/definitions/forEach" },
+        "before": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/action" },
+          "description": "CLI actions run before this request."
+        },
+        "after": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/action" },
+          "description": "CLI actions run after this request, even when it fails."
+        }
+      }
+    },
+    "forEach": {
+      "type": "object",
+      "required": ["in"],
+      "additionalProperties": false,
+      "patternProperties": { "^_": {} },
+      "description": "Runs the body once per item of a list.",
+      "properties": {
+        "in": {
+          "description": "Item source: an array variable name (string), or an inline request that fetches one (object).",
+          "oneOf": [
+            { "type": "string" },
+            { "$ref": "#/definitions/request" }
+          ]
+        },
+        "items_path": {
+          "type": "string",
+          "description": "JSON pointer to the array within the source (empty = the source itself)."
+        },
+        "as": {
+          "type": "string",
+          "description": "Names the current item in the loop scope (default \"item\"): {{item}} is the item, {{item/field}} a field of it."
+        },
+        "sequence": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/request" },
+          "description": "Loop body: an ordinary request sequence. Empty = the host request is the body (single-call loop)."
+        },
+        "capture": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/definitions/captureEntry" },
+          "description": "Values persisted from the iteration scope into the parent dictionary: name -> {key, value} builds dictionary[name][key] = value."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Safety cap on the number of iterations (default 100)."
+        }
+      }
+    },
+    "captureEntry": {
+      "type": "object",
+      "required": ["key", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string" },
+        "value": { "type": "string" }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": ["name", "run"],
+      "additionalProperties": false,
+      "patternProperties": { "^_": {} },
+      "properties": {
+        "name": { "type": "string" },
+        "run": { "type": "string", "description": "Command template, resolved against the current scope." },
+        "shell": { "type": "string", "description": "Shell override (sh, bash, powershell, cmd, or a program name)." },
+        "env": { "$ref": "#/definitions/stringMap" },
+        "capture": { "type": "string", "description": "Dictionary variable receiving the trimmed stdout (JSON auto-parsed)." },
+        "on_failure": { "$ref": "#/definitions/onFailure" },
+        "timeout_ms": { "type": "integer", "minimum": 0 },
+        "cwd": { "type": "string" }
+      }
+    }
+  }
+}

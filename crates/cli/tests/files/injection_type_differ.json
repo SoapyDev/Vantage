@@ -1,0 +1,43 @@
+{
+  "url": "/post",
+  "method": "POST",
+  "ignored_fields": ["url", "origin", "data", "files", "form", "args"],
+
+  "steps": [
+    {
+      "name": "Create id",
+      "url": "https://httpbin.org/post",
+      "method": "POST",
+      "payload": {
+        "id": "1234"
+      },
+      "capture": {
+        "json.id": "id"
+      }
+    },
+    {
+      "name": "Create second id",
+      "url": "https://httpbin.org/post",
+      "method": "POST",
+      "payload": {
+        "id": "{{id}}",
+        "pid": "Super-pid"
+      }
+    }
+  ],
+
+  "tests": [
+    {
+      "name": "JSON injection",
+      "expected_status": 200,
+      "payload": {
+        "id": "\"{{id}}\""
+      },
+      "expected_response": {
+        "json": {
+          "id": "{{id}}"
+        }
+      }
+    }
+  ]
+}

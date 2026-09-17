@@ -19,11 +19,17 @@ struct BuildConfig {
 fn main() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR is set by cargo");
     let yaml_path = Path::new(&manifest_dir).join("../../environments.yaml");
+    let example_path = Path::new(&manifest_dir).join("../../environments.example.yaml");
 
     println!("cargo:rerun-if-changed={}", yaml_path.display());
+    println!("cargo:rerun-if-changed={}", example_path.display());
 
-    let text = fs::read_to_string(&yaml_path)
-        .unwrap_or_else(|e| panic!("failed to read {}: {e}", yaml_path.display()));
+    // `environments.yaml` is gitignored (it holds real hosts/secret names), so
+    // a fresh checkout — including CI — falls back to the committed example.
+    let path = if yaml_path.exists() { &yaml_path } else { &example_path };
+
+    let text = fs::read_to_string(path)
+        .unwrap_or_else(|e| panic!("failed to read {}: {e}", path.display()));
 
     let config: BuildConfig =
         serde_yaml_ng::from_str(&text).unwrap_or_else(|e| panic!("invalid environments.yaml: {e}"));
@@ -49,4 +55,9 @@ fn main() {
     let out_dir = env::var("OUT_DIR").expect("OUT_DIR is set by cargo");
     let dest = Path::new(&out_dir).join("environments_generated.rs");
     fs::write(&dest, generated).expect("failed to write generated environment names");
+
+    // Copied verbatim (not just referenced) so `include_str!` in config.rs has
+    // a stable, always-present path regardless of which source file was used.
+    let resolved_dest = Path::new(&out_dir).join("environments_resolved.yaml");
+    fs::write(&resolved_dest, &text).expect("failed to write resolved environments.yaml");
 }

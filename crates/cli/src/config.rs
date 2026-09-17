@@ -26,7 +26,8 @@ const ENVIRONMENTS_FILE_VAR: &str = "VANTAGE_ENVIRONMENTS_FILE";
 include!(concat!(env!("OUT_DIR"), "/environments_generated.rs"));
 
 /// The raw `environments.yaml`, embedded into the binary at compile time.
-const EMBEDDED_ENVIRONMENTS: &str = include_str!("../../../environments.yaml");
+const EMBEDDED_ENVIRONMENTS: &str =
+    include_str!(concat!(env!("OUT_DIR"), "/environments_resolved.yaml"));
 
 /// Loads the environment definitions.
 ///

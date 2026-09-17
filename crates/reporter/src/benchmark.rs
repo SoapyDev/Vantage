@@ -827,7 +827,8 @@ mod tests {
             load: None,
         };
 
-        let root = std::env::temp_dir().join(format!("vantage_bench_report_{}", std::process::id()));
+        let root =
+            std::env::temp_dir().join(format!("vantage_bench_report_{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
 
         let dir = write_report_files(
@@ -905,7 +906,8 @@ mod tests {
             "p90_ms": 50.0, "expected_ms": 250.0, "description": "Network round-trip"
         }]);
 
-        let root = std::env::temp_dir().join(format!("vantage_bench_metrics_{}", std::process::id()));
+        let root =
+            std::env::temp_dir().join(format!("vantage_bench_metrics_{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         let dir = write_report_files("s.json", "test", &report, metrics, &root).unwrap();
 
@@ -1014,7 +1016,8 @@ mod tests {
             stop_reason: None,
             load: None,
         };
-        let root = std::env::temp_dir().join(format!("vantage_bench_noload_{}", std::process::id()));
+        let root =
+            std::env::temp_dir().join(format!("vantage_bench_noload_{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         let dir =
             write_report_files("s.json", "test", &report, serde_json::Value::Null, &root).unwrap();
